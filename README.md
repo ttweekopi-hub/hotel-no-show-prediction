@@ -189,7 +189,7 @@ Here are the exact results recorded in my pipeline logs (`logs/pipeline.log`):
 
 ### 📈 Understanding the Metrics (In Simple Terms)
 
-To explain these results to assessors, I break down what each of these evaluation metrics actually means in the context of predicting hotel no-shows:
+To interpret these results clearly, I break down what each of these evaluation metrics actually means in the context of predicting hotel no-shows:
 
 1. **ROC-AUC (Receiver Operating Characteristic - Area Under the Curve)**
    * *What it means:* This measures the model's ability to distinguish between a guest who will actually show up and one who won't. It scores from `0.5` (guessing randomly, like a coin flip) to `1.0` (perfect prediction).
