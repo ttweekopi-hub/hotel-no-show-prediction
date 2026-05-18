@@ -6,7 +6,11 @@ echo "=========================================="
 echo "Executing End-to-End ML Pipeline (run.sh)"
 echo "=========================================="
 
-python3 main.py
+if command -v python3 &> /dev/null; then
+    python3 main.py
+else
+    python main.py
+fi
 
 echo "=========================================="
 echo "Pipeline execution finished."
