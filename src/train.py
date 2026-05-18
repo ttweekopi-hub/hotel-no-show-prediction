@@ -14,7 +14,7 @@ import pickle
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import f1_score, roc_auc_score, recall_score, precision_score, accuracy_score
+from sklearn.metrics import f1_score, roc_auc_score, recall_score, precision_score, accuracy_score, confusion_matrix
 import lightgbm as lgb
 from src.logger import get_logger
 
@@ -136,6 +136,28 @@ def train_and_select_model(
     
     logger.info(f"🏆 Best model based on ROC-AUC: {best_model_name} with ROC-AUC = {best_roc_auc:.4f}")
     
+    # Calculate confusion matrix for the best model to present real business trade-offs
+    try:
+        best_preds = best_model_obj.predict(X_test)
+        cm = confusion_matrix(y_test, best_preds)
+        tn, fp, fn, tp = cm.ravel()
+        
+        logger.info("=" * 60)
+        logger.info(f"📊 Confusion Matrix for Selected Best Model ({best_model_name}):")
+        logger.info("-" * 60)
+        logger.info("                 Predicted Show   Predicted No-Show")
+        logger.info(f"Actual Show      {tn:<14}   {fp:<17}")
+        logger.info(f"Actual No-Show   {fn:<14}   {tp:<17}")
+        logger.info("-" * 60)
+        logger.info("Business Interpretation:")
+        logger.info(f"  - True Negatives (TN): {tn} bookings correctly predicted to show up.")
+        logger.info(f"  - True Positives (TP): {tp} bookings correctly predicted as no-shows.")
+        logger.info(f"  - False Positives (FP): {fp} false alarms (predicted no-show, but showed up).")
+        logger.info(f"  - False Negatives (FN): {fn} missed no-shows (predicted show, but cancelled).")
+        logger.info("=" * 60)
+    except Exception as cm_err:
+        logger.warning(f"Could not compute or print confusion matrix: {str(cm_err)}")
+
     # Save the absolute best model object
     os.makedirs(models_dir, exist_ok=True)
     best_model_path = os.path.join(models_dir, "best_model.pkl")

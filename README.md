@@ -209,6 +209,31 @@ Based on the model run results, I selected the **LightGBM Classifier** as the fi
 * **Smart Decision Boundaries:** LightGBM is a gradient boosting model. It is exceptionally good at finding complex, non-linear relationships (e.g., how the interaction between short stay durations at specific branches combined with long lead times increases the likelihood of a no-show).
 * **Speed and Production-Readiness:** Unlike Random Forest, which is extremely heavy, memory-intensive, and slow to load, LightGBM is lightweight. This makes it perfect for deployment in production environments like Render (free tier) and inside containerized Docker images!
 
+---
+
+### 3.3 🎯 Understanding the Confusion Matrix (Business Rationale)
+
+While general metrics like ROC-AUC and Accuracy tell us how the model performs overall, a **Confusion Matrix** shows us the exact trade-offs our model makes in real-world business terms. In hotel operations, not all classification errors are equal.
+
+When the model makes a prediction, it categorizes each booking into one of four possible outcomes:
+
+| Actual Status | Predicted: **Show Up** | Predicted: **No-Show** |
+| :--- | :--- | :--- |
+| **Guest Showed Up** | **True Negative (TN)**<br>• *What it means:* The guest was expected to show, and they did.<br>• *Business Action:* The hotel allocates the room normally. | **False Positive (FP) / False Alarm**<br>• *What it means:* Guest was expected to cancel, but they showed up.<br>• *Business Risk:* If the hotel overbooked their room, it could lead to double-booking! |
+| **Guest No-Show** | **False Negative (FN) / Missed No-Show**<br>• *What it means:* Guest was expected to show, but did not.<br>• *Business Risk:* Direct loss of revenue; the room stays empty and un-monetized. | **True Positive (TP)**<br>• *What it means:* Guest was expected to cancel, and they did.<br>• *Business Action:* Perfect! The hotel can pre-emptively resell this room or call to confirm. |
+
+#### 📊 How to read the confusion matrix in the logs (`logs/pipeline.log`)
+During pipeline training, the orchestrator outputs the confusion matrix for the final selected model on the test set. Here is the visual grid printed in the logs:
+
+* **True Negatives (TN)**: The count of bookings correctly predicted to arrive.
+* **True Positives (TP)**: The count of bookings correctly predicted to cancel (enabling proactive reselling).
+* **False Positives (FP)**: The false alarm rate (predicted no-show, but guest arrives).
+* **False Negatives (FN)**: The missed cancellation rate (predicted show, but guest cancels).
+
+By balancing these outcomes, we can adjust model probability thresholds to maximize hotel occupancy while minimizing double-booking risks!
+
+---
+
 ### 4. Dynamic Configuration Sandbox (Hyperparameter Tweakability)
 
 The pipeline implements a **Configuration Management** system using a central **`config.json`** file at the root. This "Configuration Sandbox" allows you to adjust, tweak, and test different hyperparameter configurations without modifying the underlying Python code.
