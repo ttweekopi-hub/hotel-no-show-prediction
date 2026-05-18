@@ -1,0 +1,57 @@
+# ==========================================
+# Python Byte-compiled / Optimized / DLL Files
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# Jupyter Notebook & Checkpoints
+# ==========================================
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# ==========================================
+# Virtual Environments & Packages
+# ==========================================
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+__pypackages__/
+
+# ==========================================
+# Large Datasets & Databases (CRITICAL)
+# ==========================================
+data/noshow.db
+data/noshow.csv
+*.db
+*.sqlite3
+*.csv
+
+# ==========================================
+# Machine Learning Models & Logging
+# ==========================================
+models/*.pkl
+models/*.joblib
+models/*.h5
+logs/
+*.log
+
+# ==========================================
+# IDE / Editor Settings & OS Files
+# ==========================================
+.vscode/
+.idea/
+.spyderproject
+.spyproject
+.DS_Store
+Thumbs.db
+
+# ==========================================
+# AI Agent Workspaces
+# ==========================================
+.agents/
