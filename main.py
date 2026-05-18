@@ -45,6 +45,24 @@ def main():
         logger.info("[Step 5/6] Starting Model Training Phase...")
         best_model_name, results = train_and_select_model(X_train, X_test, y_train, y_test)
         
+        # Performance Threshold Check for Quality Gate
+        # ROC-AUC is our primary metric since it measures the model's ranking ability,
+        # which is crucial for hoteliers to rank and contact high-risk no-show reservations.
+        best_roc_auc = results[best_model_name]["ROC-AUC"]
+        logger.info(f"Model Performance Verification: Primary Metric (ROC-AUC) = {best_roc_auc:.4f}")
+        
+        MIN_ROC_AUC_THRESHOLD = 0.53
+        if best_roc_auc < MIN_ROC_AUC_THRESHOLD:
+            err_msg = (
+                f"QUALITY GATE FAILURE: Best model's ROC-AUC ({best_roc_auc:.4f}) is below "
+                f"the required minimum threshold of {MIN_ROC_AUC_THRESHOLD:.2f}! "
+                f"Model predictive power is insufficient to capture no-shows."
+            )
+            logger.error(err_msg)
+            raise ValueError(err_msg)
+            
+        logger.info(f"✅ Quality Gate Passed: Best model's ROC-AUC ({best_roc_auc:.4f}) exceeds baseline of {MIN_ROC_AUC_THRESHOLD:.2f}.")
+        
         # Step 6: Inference Test Verification
         logger.info("[Step 6/6] Verifying Inference Pipeline on Sample Cleaned Bookings...")
         # Verify predict.py by sending in a sample subset of featured data

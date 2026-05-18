@@ -254,9 +254,37 @@ Once started, you can access the interactive **Swagger UI API playground** at:
 
 ---
 
-## 🤖 Continuous Integration / Continuous Deployment (CI/CD)
+## 🤖 Continuous Integration (CI)
 
-I configured an automated workflow using **GitHub Actions** (`.github/workflows/ci-cd.yml`):
-1. **Quality Gate**: Every push to the `main` branch spins up a Python environment, generates a synthetic database matching the structure of `noshow.db`, and executes the full orchestration flow (`python main.py`).
-2. **Auto-Deploy (Render CD Webhook)**: If all pipeline tests pass successfully, GitHub Actions triggers a secure deployment webhook to **Render**, automatically updating my live web application with the newly trained model!
+I configured an automated workflow using **GitHub Actions** (`.github/workflows/ci-cd.yml`) that acts as a rigorous **Quality Gate**. Every push to the `main` branch (and pull request) triggers this automated pipeline to build the environment, generate a mock database, and execute the full end-to-end ML cycle (Preprocessing -> Training -> Evaluation).
+
+### 🔍 What is Checked at the Quality Gate?
+
+For the GitHub Actions build to pass successfully, my pipeline must clear four major validation checkpoints:
+
+1. **Environment Setup & Dependency Check**
+   - The runner spins up a Python 3.10 virtual environment and attempts to install all Python packages listed in [requirements.txt](file:///c:/Users/ROG/Documents/AIAPHotel/requirements.txt).
+   - *Requirement to Pass:* Every package must download and install without any version mismatches or dependency conflicts.
+
+2. **Database Generation Integrity**
+   - The script [generate_mock_db.py](file:///c:/Users/ROG/Documents/AIAPHotel/generate_mock_db.py) is executed to programmatically construct `data/noshow.db` containing realistic, noisy synthetic customer bookings.
+   - *Requirement to Pass:* The database must be successfully created with correct table layouts, proper column types, and sample records representing all data challenges.
+
+3. **Complete End-to-End Execution Flow & Metric Quality Gate**
+   - The runner executes [run.sh](file:///c:/Users/ROG/Documents/AIAPHotel/run.sh) to run the main orchestrator ([main.py](file:///c:/Users/ROG/Documents/AIAPHotel/main.py)). This triggers: Ingestion ➡️ Cleaning ➡️ Feature Engineering ➡️ Preprocessing ➡️ Training & Evaluation ➡️ Inference Test.
+   - *Requirement to Pass:* Every single stage of the orchestrator must run without crashes or exceptions. In addition, I have added a **Model Metric Quality Gate check**:
+     - **Primary Metric (ROC-AUC):** We prioritize **ROC-AUC** because it measures the model's ranking ability, allowing hoteliers to rank and contact guests with the highest probability of canceling.
+     - **Performance Threshold:** The best trained model must achieve a **ROC-AUC score of at least 0.53** (ensuring the model performs significantly better than random guessing at 0.50). If the model's score drops below this threshold, the pipeline throws a `ValueError`, immediately failing the GitHub Action!
+
+4. **Asset Serialization Verification**
+   - The workflow verifies that the entire set of operational files have been correctly outputted and saved in the repository context.
+   - *Requirement to Pass:*
+     - A log file must exist at `logs/pipeline.log` confirming that step-by-step SGT timestamps were written.
+     - Four specific serialized pickle model files must exist in the `models/` folder:
+       - `imputer_knn_room.pkl` (KNN room type imputer)
+       - `imputer_rf_price.pkl` (Random Forest price imputer)
+       - `preprocessor.pkl` (Standardizer and OHE preprocessing transformer)
+       - `best_model.pkl` (The final selected prediction model)
+
+If any of these checkpoints fail (e.g., a package fails to install, a cleaning step crashes, or any of the four model pickle files are missing), the entire GitHub Action immediately fails, stopping bad code changes from entering our main branch!
 
