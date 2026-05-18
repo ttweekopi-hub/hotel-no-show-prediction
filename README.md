@@ -161,7 +161,7 @@ hotel-no-show-prediction/
 
 ## ⚙️ Key Technical Features
 
-### 1. Smart Machine Learning Imputation (`NaN 24,881`)
+### 1. Smart ML Imputation (24,881 Missing Values)
 Rather than discarding over 20% of the booking records because they are missing the room category or price (which would bias and weaken my final model), I implemented an intelligent, multi-stage machine learning imputation strategy:
 * **KNN Classifier (`imputer_knn_room.pkl`)**: Used when room types are missing but price is known. It classifies rooms based on their price and branch (e.g., higher prices are automatically imputed as a *President Suite* or *King*).
 * **Random Forest Regressor (`imputer_rf_price.pkl`)**: Once room types are complete, this regressor learns from the known prices to estimate the **24,881 missing prices** (`NaN`) based on branch, room type, and guest demographics.
