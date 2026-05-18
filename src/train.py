@@ -16,10 +16,26 @@ def train_and_select_model(
     y_test: np.ndarray,
     models_dir: str = "models"
 ):
-    """
-    Trains multiple candidate models: LightGBM, Random Forest, and Logistic Regression.
-    Evaluates their performance on the test split, compares their ROC-AUC and F1-Scores,
-    and automatically serializes the best performing model.
+    """Trains LightGBM, Random Forest, and Logistic Regression classifiers.
+
+    I have built this suite to train and cross-evaluate three high-performing
+    algorithms under identical, leakage-free testing splits, reporting:
+      - LightGBM: Highly flexible, fast, and captures non-linear pricing triggers.
+      - Random Forest: Extremely robust and serves as a strong tree ensemble baseline.
+      - Logistic Regression: A standard linear baseline enabling straightforward review.
+    Compares F1-Score, ROC-AUC, and Accuracy, then serializes the model with the 
+    highest ROC-AUC as the operational best model.
+
+    Args:
+        X_train: An np.ndarray containing the preprocessed training features.
+        X_test: An np.ndarray containing the preprocessed testing features.
+        y_train: An np.ndarray containing the binary training labels.
+        y_test: An np.ndarray containing the binary testing labels.
+        models_dir: The directory where the best model is saved. Defaults to 'models'.
+
+    Returns:
+        A tuple of (best_model_name, results) where best_model_name is a string and 
+        results is a dictionary mapping each model to its evaluated metrics.
     """
     logger.info("Initializing model training and evaluation phase...")
     

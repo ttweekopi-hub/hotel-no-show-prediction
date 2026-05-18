@@ -10,8 +10,15 @@ from src.predict import make_predictions
 logger = get_logger("Orchestrator")
 
 def main():
-    """
-    Main orchestration engine running the end-to-end hotel no-show ML pipeline.
+    """Main orchestration engine executing the end-to-end ML pipeline.
+
+    Coordinates all pipeline components:
+      1. Ingests raw data from SQLite noshow.db.
+      2. Cleans columns and imputes rooms/prices without data leakage.
+      3. Engineers duration and advance booking features.
+      4. Splits dataset (80/20 stratified) and encodes/scales features.
+      5. Trains, compares, tunes, and serializes the best predictive model.
+      6. Verifies model inference pipeline on sample inputs.
     """
     logger.info("==================================================")
     logger.info("STARTING HOTEL NO-SHOW MACHINE LEARNING PIPELINE")

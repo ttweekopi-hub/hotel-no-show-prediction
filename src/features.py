@@ -4,8 +4,22 @@ from src.logger import get_logger
 logger = get_logger("Features")
 
 def generate_features(df: pd.DataFrame) -> pd.DataFrame:
-    """
-    Calculates stay_duration and lead_time_months from booking details.
+    """Computes stay_duration and lead_time_months features from booking details.
+
+    I have designed this function to construct high-impact predictive features:
+      - 'stay_duration': Represents length of stay in days, correctly handling month 
+        boundaries (e.g. arrival June 30, checkout July 2) via specific day caps.
+      - 'lead_time_months': Represents how far in advance the customer made the
+        booking, calculated as the modulo-12 month difference between arrival and booking.
+
+    Args:
+        df: A pd.DataFrame containing the cleaned hotel booking records.
+
+    Returns:
+        A pd.DataFrame with engineered 'stay_duration' and 'lead_time_months' features.
+
+    Raises:
+        KeyError: If required raw month/day columns are missing from the dataframe.
     """
     logger.info("Starting feature engineering calculations...")
     df = df.copy()

@@ -6,8 +6,19 @@ from src.logger import get_logger
 logger = get_logger("Ingest")
 
 def ingest_data(db_path: str = "data/noshow.db") -> pd.DataFrame:
-    """
-    Ingests raw data from the SQLite database and returns a Pandas DataFrame.
+    """Ingests raw hotel booking records from the SQLite database.
+
+    Establishes a connection to the SQLite database, pulls all rows from the
+    'noshow' table, and returns them as a structured Pandas DataFrame.
+
+    Args:
+        db_path: The file path to the SQLite database. Defaults to 'data/noshow.db'.
+
+    Returns:
+        A pd.DataFrame containing the raw records loaded from the database.
+
+    Raises:
+        FileNotFoundError: If the database file does not exist at db_path.
     """
     if not os.path.exists(db_path):
         err_msg = f"Database not found at path: {db_path}"

@@ -9,9 +9,32 @@ from src.logger import get_logger
 logger = get_logger("Preprocess")
 
 def preprocess_data(df: pd.DataFrame, models_dir: str = "models", is_training: bool = True):
-    """
-    Handles label mapping, dataset splitting, robust scaling, and one-hot encoding.
-    Ensures zero data leakage by fitting transformers strictly on training data.
+    """Executes target mapping, stratified splitting, scaling, and one-hot encoding.
+
+    I have engineered this stage to completely eliminate data leakage:
+      - Maps target labels (no_show) to binary integers.
+      - Splits the data into stratified 80% training and 20% validation sets.
+      - Scales numerical features (price, stay duration, lead time) using RobustScaler
+        to defend the model against unexpected pricing outliers.
+      - Encodes categorical values (branch, country, room) using OneHotEncoder.
+      - Fits the preprocessors strictly on the training set and transforms the test set.
+
+    Args:
+        df: A pd.DataFrame containing the featured hotel booking records.
+        models_dir: The directory where the fitted preprocessor is saved or loaded from.
+            Defaults to 'models'.
+        is_training: If True, fits and serializes a new preprocessing pipeline; 
+            if False, loads a pre-trained serialized preprocessing pipeline.
+
+    Returns:
+        If is_training is True:
+            A tuple of (X_train_processed, X_test_processed, y_train, y_test, feature_names)
+            containing the processed matrices, raw targets, and engineered column names.
+        If is_training is False:
+            A tuple of (X_inference_processed, None, None, None, None) for inference.
+
+    Raises:
+        FileNotFoundError: If is_training is False and no preprocessor asset is found.
     """
     logger.info("Initializing preprocessing and splitting stage...")
     df = df.copy()

@@ -7,11 +7,25 @@ from src.logger import get_logger
 logger = get_logger("Predict")
 
 def make_predictions(df: pd.DataFrame, models_dir: str = "models") -> pd.DataFrame:
-    """
-    Runs the inference pipeline on raw new dataframe bookings:
-      1. Loads preprocessor and model.
-      2. Makes predictions.
-      3. Appends predicted_probability and predicted_no_show columns.
+    """Runs the full inference pipeline on raw new reservation records.
+
+    I have created this interface to cleanly score fresh customer bookings:
+      - Automatically checks that preprocessor and model pickles are fully loaded.
+      - Standardizes first_time binary guest variables.
+      - Transforms categorical and numeric features strictly using the saved parameters.
+      - Returns class predictions and absolute probability scores for business analysts.
+
+    Args:
+        df: A pd.DataFrame containing one or more raw reservation booking rows.
+        models_dir: The directory where the preprocessor and model are loaded from.
+            Defaults to 'models'.
+
+    Returns:
+        A pd.DataFrame matching the input rows, appended with 'predicted_probability',
+        'predicted_no_show' (0/1), and 'predicted_no_show_label' (No/Yes) columns.
+
+    Raises:
+        FileNotFoundError: If the best model or preprocessor pickle assets are missing.
     """
     logger.info("Initializing inference pipeline...")
     

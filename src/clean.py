@@ -9,15 +9,29 @@ from src.logger import get_logger
 logger = get_logger("Clean")
 
 def clean_data(df: pd.DataFrame, models_dir: str = "models", is_training: bool = True) -> pd.DataFrame:
-    """
-    Cleans raw dataframe:
-      1. Drops rows with missing target variable (no_show).
-      2. Standardizes casing of month names to Title Case.
-      3. Converts negative arrival and checkout day values to absolute values.
-      4. Maps text adults (e.g. 'one', 'two') to integers.
-      5. Parses currency symbols (SGD$, USD$) and unifies price to SGD using the 1.37 rate.
-      6. Uses KNN Classifier to impute missing room types.
-      7. Uses Random Forest Regressor to impute missing prices.
+    """Performs rigorous data cleaning and advanced machine-learning imputation.
+
+    I have designed this function to resolve the complex data quality anomalies:
+      - Drops rows with missing target labels to prevent invalid model optimization.
+      - Corrects inconsistent spelling/casing in month strings (e.g. MaY -> May).
+      - Converts negative day parameters to absolute values (e.g. -31 -> 31).
+      - Normalizes text representation numbers in num_adults (e.g. 'one' -> 1).
+      - Unifies mixed currency types to SGD using the implied 1.37 exchange rate.
+      - Imputes missing room types dynamically via a 5-Nearest Neighbors Classifier.
+      - Imputes missing price details dynamically via a Random Forest Regressor.
+
+    Args:
+        df: A pd.DataFrame containing the raw hotel booking records.
+        models_dir: The directory where imputation models are saved or loaded from.
+            Defaults to 'models'.
+        is_training: If True, trains new KNN and Random Forest models on available data 
+            and serializes them; if False, loads pre-trained serialized model assets.
+
+    Returns:
+        A pd.DataFrame representing the fully cleaned dataset with no missing values.
+
+    Raises:
+        FileNotFoundError: If is_training is False and required model assets are missing.
     """
     logger.info("Starting data cleaning pipeline...")
     

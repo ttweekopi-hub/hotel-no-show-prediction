@@ -4,11 +4,22 @@ import sys
 from datetime import datetime, timezone, timedelta
 
 class SGTFormatter(logging.Formatter):
-    """
-    Custom logging formatter that locks timestamps to Singapore Standard Time (SGT, UTC+8)
-    and formats them as DD-MM-YYYY HH:MM:SS SGT.
+    """Custom logging formatter for Singapore Standard Time (SGT).
+
+    Locks all log entry timestamps to Singapore Standard Time (SGT, UTC+8)
+    regardless of where the pipeline is executed (locally, in a container,
+    or on a remote cloud server).
     """
     def formatTime(self, record, datefmt=None):
+        """Formats the creation time of the log record.
+
+        Args:
+            record: The logging record being processed.
+            datefmt: An optional format string for the date/time.
+
+        Returns:
+            A string representing the formatted timestamp locked to SGT.
+        """
         # Convert epoch timestamp to UTC datetime, then convert to SGT (UTC+8)
         utc_dt = datetime.fromtimestamp(record.created, tz=timezone.utc)
         sgt_dt = utc_dt.astimezone(timezone(timedelta(hours=8)))
@@ -17,9 +28,17 @@ class SGTFormatter(logging.Formatter):
         return sgt_dt.strftime("%d-%m-%Y %H:%M:%S SGT")
 
 def get_logger(name: str) -> logging.Logger:
-    """
-    Returns a configured SGT timezone-aware logger with dual output (Console & File).
-    Guarantees duplicate log prevention and Docker/WSL/terminal compatibility.
+    """Configures and returns a timezone-aware logger with SGT timestamps.
+
+    Sets up a logger that streams logs to standard output (stdout) for container
+    compatibility and appends them to a centralized log file in logs/pipeline.log.
+    Duplicate log propagation is disabled to keep outputs clean.
+
+    Args:
+        name: A string representing the name of the logger (e.g., 'Clean', 'Train').
+
+    Returns:
+        A configured logging.Logger instance with dual console and file handlers.
     """
     logger = logging.getLogger(name)
     
