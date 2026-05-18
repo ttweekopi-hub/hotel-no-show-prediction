@@ -214,12 +214,12 @@ Based on the model run results, I selected the **LightGBM Classifier** as the fi
 The pipeline implements a **Configuration Management** system using a central **`config.json`** file at the root. This "Configuration Sandbox" allows you to adjust, tweak, and test different hyperparameter configurations without modifying the underlying Python code.
 
 #### How it works under the hood:
-* **Central Control:** All model instantiation parameters are declared inside [config.json](file:///c:/Users/ROG/Documents/AIAPHotel/config.json).
-* **Automatic Detection:** The orchestrator ([main.py](file:///c:/Users/ROG/Documents/AIAPHotel/main.py)) checks for this file at runtime, loads the settings, and logs: `Successfully loaded model hyperparameters from config.json.`
-* **Flexible Execution:** The training script ([src/train.py](file:///c:/Users/ROG/Documents/AIAPHotel/src/train.py)) extracts the hyperparameters and feeds them dynamically into the constructor of each classifier using keyword expansion (`**kwargs`).
+* **Central Control:** All model instantiation parameters are declared inside [config.json](./config.json).
+* **Automatic Detection:** The orchestrator ([main.py](./main.py)) checks for this file at runtime, loads the settings, and logs: `Successfully loaded model hyperparameters from config.json.`
+* **Flexible Execution:** The training script ([src/train.py](./src/train.py)) extracts the hyperparameters and feeds them dynamically into the constructor of each classifier using keyword expansion (`**kwargs`).
 
 #### 🧪 How you can test it:
-1. Open **[config.json](file:///c:/Users/ROG/Documents/AIAPHotel/config.json)** at the project root.
+1. Open **[config.json](./config.json)** at the project root.
 2. Edit a parameter of interest (for example, lower `LightGBM` -> `n_estimators` to `10`, or reduce `RandomForest` -> `max_depth` to `5`).
 3. Re-run the pipeline using `./run.sh` (or `./run.ps1` on Windows).
 4. Inspect the console or `logs/pipeline.log`. You will instantly see how your model scores shift dynamically in response to your hyperparameter choices!
@@ -284,15 +284,15 @@ I configured an automated workflow using **GitHub Actions** (`.github/workflows/
 For the GitHub Actions build to pass successfully, my pipeline must clear four major validation checkpoints:
 
 1. **Environment Setup & Dependency Check**
-   - The runner spins up a Python 3.10 virtual environment and attempts to install all Python packages listed in [requirements.txt](file:///c:/Users/ROG/Documents/AIAPHotel/requirements.txt).
+   - The runner spins up a Python 3.10 virtual environment and attempts to install all Python packages listed in [requirements.txt](./requirements.txt).
    - *Requirement to Pass:* Every package must download and install without any version mismatches or dependency conflicts.
 
 2. **Database Generation Integrity**
-   - The script [generate_mock_db.py](file:///c:/Users/ROG/Documents/AIAPHotel/generate_mock_db.py) is executed to programmatically construct `data/noshow.db` containing realistic, noisy synthetic customer bookings.
+   - The script [generate_mock_db.py](./generate_mock_db.py) is executed to programmatically construct `data/noshow.db` containing realistic, noisy synthetic customer bookings.
    - *Requirement to Pass:* The database must be successfully created with correct table layouts, proper column types, and sample records representing all data challenges.
 
 3. **Complete End-to-End Execution Flow & Metric Quality Gate**
-   - The runner executes [run.sh](file:///c:/Users/ROG/Documents/AIAPHotel/run.sh) to run the main orchestrator ([main.py](file:///c:/Users/ROG/Documents/AIAPHotel/main.py)). This triggers: Ingestion ➡️ Cleaning ➡️ Feature Engineering ➡️ Preprocessing ➡️ Training & Evaluation ➡️ Inference Test.
+   - The runner executes [run.sh](./run.sh) to run the main orchestrator ([main.py](./main.py)). This triggers: Ingestion ➡️ Cleaning ➡️ Feature Engineering ➡️ Preprocessing ➡️ Training & Evaluation ➡️ Inference Test.
    - *Requirement to Pass:* Every single stage of the orchestrator must run without crashes or exceptions. In addition, I have added a **Model Metric Quality Gate check**:
      - **Primary Metric (ROC-AUC):** We prioritize **ROC-AUC** because it measures the model's ranking ability, allowing hoteliers to rank and contact guests with the highest probability of canceling.
      - **Performance Threshold:** The best trained model must achieve a **ROC-AUC score of at least 0.53** (ensuring the model performs significantly better than random guessing at 0.50). If the model's score drops below this threshold, the pipeline throws a `ValueError`, immediately failing the GitHub Action!
