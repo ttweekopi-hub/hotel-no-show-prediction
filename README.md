@@ -260,15 +260,3 @@ I configured an automated workflow using **GitHub Actions** (`.github/workflows/
 1. **Quality Gate**: Every push to the `main` branch spins up a Python environment, generates a synthetic database matching the structure of `noshow.db`, and executes the full orchestration flow (`python main.py`).
 2. **Auto-Deploy (Render CD Webhook)**: If all pipeline tests pass successfully, GitHub Actions triggers a secure deployment webhook to **Render**, automatically updating my live web application with the newly trained model!
 
----
-
-## 🧠 EDA & Machine Learning FAQ (Tutor Answers)
-
-### ❓ Q: Should `fit` / `train` / `train-test-split` be done during the EDA (Jupyter Notebook) stage?
-**A:** **No, absolutely not!** The Exploratory Data Analysis (EDA) phase is strictly meant for analyzing and understanding the raw dataset, discovering problems (like outliers, currency mismatches, and negative numbers), and outlining our roadmap. 
-* **Data Leakage Risk**: If I perform the `train_test_split` or fit normalizers/scalers in the notebook during EDA, I run a major risk of **data leakage** (where the machine learning model gets a "sneak peek" at the testing data, making it look falsely highly accurate).
-* **Modularity**: I keep EDA separate to keep my code highly organized and modular. The actual training, evaluation, and pipeline split belong inside Task 2.
-* *Note on KNN/RF Imputers*: While I used KNN and Random Forest models in EDA, I did so **solely for smart data imputation** (filling in missing values), not for training the final predictive model. This is an advanced data cleaning technique, not a final model fit.
-
-### ❓ Q: Why did I choose LightGBM as the final model?
-**A:** LightGBM was selected because it uses a gradient boosting technique that handles mixed numerical and categorical structures incredibly well. In hotel bookings, we have highly non-linear relationships (e.g., short stay durations at specific branches combined with particular lead times have a much higher likelihood of cancelling). LightGBM naturally models these complex interactions, outperforms simple linear models, and is extremely light on RAM and compute time.
