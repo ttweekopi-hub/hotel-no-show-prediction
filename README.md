@@ -186,7 +186,7 @@ Here are the exact results recorded in my pipeline logs (`logs/pipeline.log`):
 
 ---
 
-#### 📈 Understanding the Metrics (In Simple Terms)
+#### 3.1 📈 Understanding the Metrics (In Simple Terms)
 
 To interpret these results clearly, I break down what each of these evaluation metrics actually means in the context of predicting hotel no-shows:
 
@@ -202,7 +202,7 @@ To interpret these results clearly, I break down what each of these evaluation m
 
 ---
 
-#### 🏆 Why LightGBM is My Best Choice
+#### 3.2 🏆 Why LightGBM is My Best Choice
 
 Based on the model run results, I selected the **LightGBM Classifier** as the final production model. Here is the rationale:
 * **Top-Tier Performance:** LightGBM achieved the **highest ROC-AUC score of 0.7697** and the **highest overall accuracy of 74.10%**. Although Random Forest achieved an F1-Score that was a tiny bit higher (`0.6041` vs `0.6033`), the difference is negligible (`0.0008`), and LightGBM is the clear overall winner.
@@ -255,7 +255,7 @@ To run the entire end-to-end machine learning pipeline without installing Python
 Upon container startup, Docker automatically:
 1. Runs `generate_mock_db.py` to programmatically build the synthetic SQLite reservation database (`data/noshow.db`).
 2. Executes `run.sh` to trigger the main orchestrator (`main.py`), performing ingestion, cleaning, features, scaling/encoding, candidate training, selection, and inference testing.
-3. Streamlines all timezone-locked SGT logs directly onto the terminal.
+3. Streams all timezone-locked SGT logs directly onto the terminal.
 
 ---
 
