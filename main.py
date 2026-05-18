@@ -12,6 +12,8 @@ I designed this central hub to coordinate the full machine learning lifecycle:
 """
 
 import sys
+import os
+import json
 from src.logger import get_logger
 from src.ingest import ingest_data
 from src.clean import clean_data
@@ -38,6 +40,20 @@ def main():
     logger.info("==================================================")
     
     try:
+        # Load configuration settings if available
+        logger.info("Loading model configuration settings...")
+        config_path = "config.json"
+        model_configs = None
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    config_data = json.load(f)
+                    model_configs = config_data.get("models", {})
+                logger.info("Successfully loaded model hyperparameters from config.json.")
+            except Exception as e:
+                logger.warning(f"Failed to parse config.json, using default hyperparameters. Error: {e}")
+        else:
+            logger.info("config.json not found, using default model hyperparameters.")
         # Step 1: Ingest Data
         logger.info("[Step 1/6] Starting Ingestion Phase...")
         raw_df = ingest_data("data/noshow.db")
@@ -56,7 +72,9 @@ def main():
         
         # Step 5: Model Training, Tuning, & Serialization
         logger.info("[Step 5/6] Starting Model Training Phase...")
-        best_model_name, results = train_and_select_model(X_train, X_test, y_train, y_test)
+        best_model_name, results = train_and_select_model(
+            X_train, X_test, y_train, y_test, model_configs=model_configs
+        )
         
         # Performance Threshold Check for Quality Gate
         # ROC-AUC is our primary metric since it measures the model's ranking ability,

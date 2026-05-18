@@ -25,7 +25,8 @@ def train_and_select_model(
     X_test: np.ndarray, 
     y_train: np.ndarray, 
     y_test: np.ndarray,
-    models_dir: str = "models"
+    models_dir: str = "models",
+    model_configs: dict = None
 ):
     """Trains LightGBM, Random Forest, and Logistic Regression classifiers.
 
@@ -43,6 +44,7 @@ def train_and_select_model(
         y_train: An np.ndarray containing the binary training labels.
         y_test: An np.ndarray containing the binary testing labels.
         models_dir: The directory where the best model is saved. Defaults to 'models'.
+        model_configs: An optional dictionary containing custom hyperparameters for each model.
 
     Returns:
         A tuple of (best_model_name, results) where best_model_name is a string and 
@@ -50,27 +52,37 @@ def train_and_select_model(
     """
     logger.info("Initializing model training and evaluation phase...")
     
-    # Initialize candidate models with optimized parameters
+    if model_configs is None:
+        model_configs = {}
+        
+    # Extract hyperparameters with fallback defaults if not provided in the configuration
+    lgb_params = model_configs.get("LightGBM", {
+        "n_estimators": 150, 
+        "learning_rate": 0.05, 
+        "random_state": 42, 
+        "n_jobs": -1,
+        "verbosity": -1
+    })
+    
+    rf_params = model_configs.get("RandomForest", {
+        "n_estimators": 100, 
+        "max_depth": 12, 
+        "random_state": 42, 
+        "n_jobs": -1
+    })
+    
+    lr_params = model_configs.get("LogisticRegression", {
+        "max_iter": 1000, 
+        "C": 1.0, 
+        "random_state": 42, 
+        "n_jobs": -1
+    })
+    
+    # Initialize candidate models with dynamic parameters
     models = {
-        "LightGBM": lgb.LGBMClassifier(
-            n_estimators=150, 
-            learning_rate=0.05, 
-            random_state=42, 
-            n_jobs=-1,
-            verbosity=-1
-        ),
-        "RandomForest": RandomForestClassifier(
-            n_estimators=100, 
-            max_depth=12, 
-            random_state=42, 
-            n_jobs=-1
-        ),
-        "LogisticRegression": LogisticRegression(
-            max_iter=1000, 
-            C=1.0, 
-            random_state=42, 
-            n_jobs=-1
-        )
+        "LightGBM": lgb.LGBMClassifier(**lgb_params),
+        "RandomForest": RandomForestClassifier(**rf_params),
+        "LogisticRegression": LogisticRegression(**lr_params)
     }
     
     best_roc_auc = 0.0
