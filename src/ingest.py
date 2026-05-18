@@ -1,3 +1,11 @@
+"""
+This module handles raw data ingestion from our SQLite database.
+
+I built this module to safely establish a connection with the local SQLite database file,
+run a SELECT query to retrieve all rows from the 'noshow' table, load them into a structured
+Pandas DataFrame, and cleanly close the database connection afterward.
+"""
+
 import sqlite3
 import pandas as pd
 import os

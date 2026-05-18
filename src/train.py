@@ -1,3 +1,14 @@
+"""
+This module trains and compares multiple models to select the best predictive model.
+
+I designed this training routine to compare three diverse candidate algorithms:
+  - LightGBM: Captures non-linear relationships and interactions efficiently.
+  - Random Forest: A strong tree-based ensemble method that acts as a robust baseline.
+  - Logistic Regression: A standard linear model providing a simple, interpretable benchmark.
+The script evaluates all models using Accuracy, Precision, Recall, F1-Score, and ROC-AUC under identical
+testing conditions, selecting and serializing the candidate with the highest ROC-AUC.
+"""
+
 import os
 import pickle
 import numpy as np

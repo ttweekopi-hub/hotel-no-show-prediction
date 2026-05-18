@@ -1,3 +1,13 @@
+"""
+This module performs all feature engineering calculations for the machine learning model.
+
+I designed this module to engineer high-impact features from the raw date columns:
+  - 'stay_duration': The duration of the reservation stay in days, calculated safely 
+    across month boundaries by checking day limits in each month.
+  - 'lead_time_months': The lead time of the booking (how early the guest booked), 
+    calculated as the modular difference in months between the booking month and arrival month.
+"""
+
 import pandas as pd
 from src.logger import get_logger
 

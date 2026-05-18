@@ -1,3 +1,11 @@
+"""
+This module performs quick exploratory checks on the mock database.
+
+I use this script to inspect specific data patterns, anomalies, and value distributions
+within my SQL database (such as missing values in 'no_show', price prefixes, and month names)
+to ensure my cleaning logic is accurate and aligned with the actual data.
+"""
+
 import sqlite3
 import pandas as pd
 

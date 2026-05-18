@@ -1,3 +1,12 @@
+"""
+This module implements the centralized logging system for the entire pipeline.
+
+I configured this module using Python's native logging features to meet strict constraints:
+  - Localizes all timestamps to Singapore Standard Time (SGT, UTC+8) for consistency across environments.
+  - Streams logs directly to stdout for terminal/Docker visibility and appends them to logs/pipeline.log.
+  - Avoids duplicate logs by turning off propagation and ensuring handlers are initialized only once.
+"""
+
 import logging
 import os
 import sys

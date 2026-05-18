@@ -1,3 +1,11 @@
+"""
+This module runs the inference pipeline to make predictions on new hotel reservations.
+
+I built this module to act as our live prediction engine. It loads the fitted preprocessor
+and the trained best model, transforms new customer reservation entries, and outputs whether
+they are predicted to be a no-show alongside their absolute probability score.
+"""
+
 import os
 import pickle
 import pandas as pd

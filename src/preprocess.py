@@ -1,3 +1,14 @@
+"""
+This module preprocesses our features and splits the dataset for training.
+
+I designed this module to handle scaling and encoding safely without any data leakage:
+  - Maps binary fields (like no_show and first_time) to integer representations.
+  - Splits the data into a stratified 80/20 train/test split to preserve label proportions.
+  - Scales numerical features using RobustScaler to protect against price outliers.
+  - One-hot encodes categorical branches, countries, and rooms using OneHotEncoder.
+  - Serializes the fitted preprocessing transformer so we can reuse it during prediction.
+"""
+
 import os
 import pickle
 import pandas as pd

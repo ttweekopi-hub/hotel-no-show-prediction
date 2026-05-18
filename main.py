@@ -1,3 +1,16 @@
+"""
+This is the main orchestrator script that runs my entire end-to-end machine learning pipeline.
+
+I designed this central hub to coordinate the full machine learning lifecycle:
+  1. Ingesting raw SQL records.
+  2. Cleaning columns and imputing missing fields.
+  3. Calculating stay duration and advance booking features.
+  4. Splitting the dataset and preprocessing features.
+  5. Training candidate models (LightGBM, Random Forest, Logistic Regression).
+  6. Selecting the best model based on a strict ROC-AUC quality gate.
+  7. Running a quick batch inference test to verify prediction outputs.
+"""
+
 import sys
 from src.logger import get_logger
 from src.ingest import ingest_data

@@ -1,3 +1,11 @@
+"""
+This module generates a mock SQLite database to simulate the hotel's raw reservation records.
+
+I created this script to generate synthetic booking data containing real-world data anomalies
+such as missing values, negative days, and mixed currencies. This database serves as a starting
+point to test my entire machine learning pipeline in a clean, reproducible way.
+"""
+
 import os
 import sqlite3
 import numpy as np

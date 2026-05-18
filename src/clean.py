@@ -1,3 +1,16 @@
+"""
+This module handles all the rigorous data cleaning and advanced imputation for the pipeline.
+
+I built this module to handle various messy data conditions in the reservation dataset:
+  - Removing rows that have missing labels in the target 'no_show' column.
+  - Standardizing month spelling and inconsistent letter casing.
+  - Converting negative days to absolute positive integers.
+  - Mapping textual adult numbers (like 'one' and 'two') to numerical digits.
+  - Converting USD prices to SGD using an exchange rate of 1.37 to unify prices.
+  - Dynamically imputing missing room types using a 5-Nearest Neighbors Classifier.
+  - Dynamically imputing missing prices using a Random Forest Regressor.
+"""
+
 import os
 import pickle
 import numpy as np
