@@ -1,0 +1,77 @@
+name: Automated Quality Gate
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  quality-gate:
+    name: End-to-End ML Pipeline Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Cache Pip Dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Generate Mock Database
+        run: |
+          python generate_mock_db.py
+
+      - name: Make Pipeline Script Executable
+        run: chmod +x run.sh
+
+      - name: Execute End-to-End Pipeline
+        run: ./run.sh
+
+      - name: Verify Pipeline Outputs
+        run: |
+          echo "=========================================="
+          echo "Verifying generated assets..."
+          echo "=========================================="
+          
+          # Check that logs were generated
+          if [ -f "logs/pipeline.log" ]; then
+              echo "✅ Logs successfully generated at logs/pipeline.log"
+              echo "--- Log Output Snippet ---"
+              tail -n 25 logs/pipeline.log
+              echo "--------------------------"
+          else
+              echo "❌ ERROR: Logs file logs/pipeline.log is missing!"
+              exit 1
+          fi
+          
+          # Check that models were serialized and saved
+          for file in imputer_knn_room.pkl imputer_rf_price.pkl preprocessor.pkl best_model.pkl; do
+              if [ -f "models/$file" ]; then
+                  echo "✅ Asset successfully serialized: models/$file"
+              else
+                  echo "❌ ERROR: Model asset models/$file is missing!"
+                  exit 1
+              fi
+          done
+          
+          echo "=========================================="
+          echo "All pipeline quality gates passed!"
+          echo "=========================================="
