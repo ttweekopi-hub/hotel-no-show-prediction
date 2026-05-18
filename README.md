@@ -186,7 +186,7 @@ Here are the exact results recorded in my pipeline logs (`logs/pipeline.log`):
 
 ---
 
-### 📈 Understanding the Metrics (In Simple Terms)
+#### 📈 Understanding the Metrics (In Simple Terms)
 
 To interpret these results clearly, I break down what each of these evaluation metrics actually means in the context of predicting hotel no-shows:
 
@@ -202,16 +202,16 @@ To interpret these results clearly, I break down what each of these evaluation m
 
 ---
 
-### 🏆 Why LightGBM is My Best Choice
+#### 🏆 Why LightGBM is My Best Choice
 
 Based on the model run results, I selected the **LightGBM Classifier** as the final production model. Here is the rationale:
 * **Top-Tier Performance:** LightGBM achieved the **highest ROC-AUC score of 0.7697** and the **highest overall accuracy of 74.10%**. Although Random Forest achieved an F1-Score that was a tiny bit higher (`0.6041` vs `0.6033`), the difference is negligible (`0.0008`), and LightGBM is the clear overall winner.
 * **Smart Decision Boundaries:** LightGBM is a gradient boosting model. It is exceptionally good at finding complex, non-linear relationships (e.g., how the interaction between short stay durations at specific branches combined with long lead times increases the likelihood of a no-show).
 * **Speed and Production-Readiness:** Unlike Random Forest, which is extremely heavy, memory-intensive, and slow to load, LightGBM is lightweight. This makes it perfect for deployment in production environments like Render (free tier) and inside containerized Docker images!
 
-### 4. Dynamic Assessor Sandbox (Hyperparameter Tweakability)
+### 4. Dynamic Configuration Sandbox (Hyperparameter Tweakability)
 
-I have built a powerful, production-grade **Configuration Management** system using a central **`config.json`** file at the root. This is an MLOps-aligned "Assessor Sandbox" that allows you to easily adjust, tweak, and test different hyperparameter configurations without changing or reading a single line of Python code!
+I have built a powerful, production-grade **Configuration Management** system using a central **`config.json`** file at the root. This is an MLOps-aligned "Configuration Sandbox" that allows you to easily adjust, tweak, and test different hyperparameter configurations without changing or reading a single line of Python code!
 
 #### How it works under the hood:
 * **Central Control:** All model instantiation parameters are declared inside [config.json](file:///c:/Users/ROG/Documents/AIAPHotel/config.json).
