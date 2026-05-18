@@ -211,7 +211,7 @@ Based on the model run results, I selected the **LightGBM Classifier** as the fi
 
 ### 4. Dynamic Configuration Sandbox (Hyperparameter Tweakability)
 
-I have built a powerful, production-grade **Configuration Management** system using a central **`config.json`** file at the root. This is an MLOps-aligned "Configuration Sandbox" that allows you to easily adjust, tweak, and test different hyperparameter configurations without changing or reading a single line of Python code!
+The pipeline implements a **Configuration Management** system using a central **`config.json`** file at the root. This "Configuration Sandbox" allows you to adjust, tweak, and test different hyperparameter configurations without modifying the underlying Python code.
 
 #### How it works under the hood:
 * **Central Control:** All model instantiation parameters are declared inside [config.json](file:///c:/Users/ROG/Documents/AIAPHotel/config.json).
