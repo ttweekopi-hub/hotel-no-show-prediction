@@ -251,19 +251,19 @@ If you are running on Windows, you can simply open PowerShell and run:
 
 ## 🐳 Docker Containerization (Zero-Setup Pipeline)
 
-To allow assessors to run my entire end-to-end machine learning pipeline without installing Python, creating virtual environments, or downloading individual libraries, I have packaged the complete lifecycle into a lightweight, self-contained **Docker image** hosted on Docker Hub.
+To run the entire end-to-end machine learning pipeline without installing Python, creating virtual environments, or downloading individual libraries, the complete lifecycle has been packaged into a lightweight, self-contained **Docker image** hosted on Docker Hub.
 
 Upon container startup, Docker automatically:
 1. Runs `generate_mock_db.py` to programmatically build the synthetic SQLite reservation database (`data/noshow.db`).
-2. Executes `run.sh` to trigger my main orchestrator (`main.py`), performing ingestion, cleaning, features, scaling/encoding, candidate training, selection, and inference testing.
-3. Streamlines all timezone-locked SGT logs directly onto your terminal.
+2. Executes `run.sh` to trigger the main orchestrator (`main.py`), performing ingestion, cleaning, features, scaling/encoding, candidate training, selection, and inference testing.
+3. Streamlines all timezone-locked SGT logs directly onto the terminal.
 
 ---
 
 ### 🏃‍♂️ Step-by-Step Instructions
 
 #### **Step 1: Pull the Pre-Built Image from Docker Hub**
-Open your terminal (Command Prompt, PowerShell, or bash) and download the pre-packaged image:
+Open the terminal (Command Prompt, PowerShell, or bash) and download the pre-packaged image:
 ```bash
 docker pull ttweekopi/hotel-no-show:latest
 ```
@@ -273,8 +273,6 @@ Execute the pipeline with a single clean command:
 ```bash
 docker run --rm ttweekopi/hotel-no-show:latest
 ```
-
-*(Note: The `--rm` flag is a great best practice that automatically deletes the temporary container from your memory once the run is finished, keeping your computer 100% clean and clutter-free).*
 
 ---
 
