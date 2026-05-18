@@ -172,11 +172,42 @@ To ensure complete consistency whether this code runs locally on my machine, on 
 * **Multi-Destination**: Outputs are streamed live to `sys.stdout` and simultaneously appended to `logs/pipeline.log`.
 * **Clean Console**: Handlers are carefully isolated to prevent duplicate logs in Jupyter or Docker environments.
 
-### 3. Comprehensive Machine Learning Evaluation
-In my training phase, I train and evaluate three different candidate algorithms to pick the most robust predictor for hotel no-shows:
-* **LightGBM Classifier** (Fitted ROC-AUC: **~0.77**, F1-Score: **~0.60**) — selected as the final production model due to its high accuracy and lightning-fast speed.
-* **Random Forest Classifier**
-* **Logistic Regression**
+### 3. Model Training & Evaluation Suite
+
+In my training phase, I trained and evaluated three candidate machine learning algorithms using a stratified 80/20 train-test-split. To choose the best model, I compared their performance across several core evaluation metrics.
+
+Here are the exact results recorded in my pipeline logs (`logs/pipeline.log`):
+
+| Model Name | F1-Score | ROC-AUC | Accuracy | Selection Status |
+| :--- | :---: | :---: | :---: | :--- |
+| **LightGBM Classifier** | **0.6033** | **0.7697** | **0.7410** | 🏆 **Best Model (Selected)** |
+| **Random Forest Classifier** | 0.6041 | 0.7689 | 0.7401 | Candidate |
+| **Logistic Regression** | 0.5880 | 0.7474 | 0.7271 | Candidate |
+
+---
+
+### 📈 Understanding the Metrics (In Simple Terms)
+
+To explain these results to assessors, I break down what each of these evaluation metrics actually means in the context of predicting hotel no-shows:
+
+1. **ROC-AUC (Receiver Operating Characteristic - Area Under the Curve)**
+   * *What it means:* This measures the model's ability to distinguish between a guest who will actually show up and one who won't. It scores from `0.5` (guessing randomly, like a coin flip) to `1.0` (perfect prediction).
+   * *Why it's our primary metric:* In hotel management, we want to rank bookings by their probability of being a no-show. This allows us to target high-risk reservations for confirmation calls or manage overbooking levels. Since **ROC-AUC measures this ranking ability**, it is our primary decision metric.
+2. **F1-Score**
+   * *What it means:* F1-Score is a balanced average of **Precision** (of all bookings predicted as no-shows, how many actually were?) and **Recall** (of all actual no-shows, how many did the model successfully catch?).
+   * *Why it matters:* In real-life booking data, most guests show up (the data is unbalanced). If a model simply guesses "everyone shows up," it would look very accurate but would be useless because it catches zero no-shows. The F1-Score prevents this by forcing the model to balance precision and recall.
+3. **Accuracy**
+   * *What it means:* The overall percentage of correct predictions. 
+   * *Why we use it cautiously:* While easy to understand, accuracy can be misleading on unbalanced data. However, at **~74%**, our best model maintains solid overall accuracy alongside high F1 and ROC-AUC.
+
+---
+
+### 🏆 Why LightGBM is My Best Choice
+
+Based on the model run results, I selected the **LightGBM Classifier** as the final production model. Here is the rationale:
+* **Top-Tier Performance:** LightGBM achieved the **highest ROC-AUC score of 0.7697** and the **highest overall accuracy of 74.10%**. Although Random Forest achieved an F1-Score that was a tiny bit higher (`0.6041` vs `0.6033`), the difference is negligible (`0.0008`), and LightGBM is the clear overall winner.
+* **Smart Decision Boundaries:** LightGBM is a gradient boosting model. It is exceptionally good at finding complex, non-linear relationships (e.g., how the interaction between short stay durations at specific branches combined with long lead times increases the likelihood of a no-show).
+* **Speed and Production-Readiness:** Unlike Random Forest, which is extremely heavy, memory-intensive, and slow to load, LightGBM is incredibly fast and produces lightweight model files. This makes it perfect for deployment in production environments like Render (free tier) and inside containerized Docker images!
 
 ---
 
