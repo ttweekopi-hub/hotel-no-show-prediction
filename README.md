@@ -65,6 +65,43 @@ graph TD
 
 ---
 
+## 🔍 Task 1 EDA Findings & Pipeline Choices
+
+During my Exploratory Data Analysis (EDA) in Task 1, I uncovered several critical data anomalies and behavioral patterns in the raw dataset. To build a robust, high-performing machine learning pipeline, I directly translated these EDA insights into specific data cleaning steps and feature engineering choices. 
+
+Here is an overview of my key findings and the corresponding choices I made in my pipeline:
+
+### 1. Handling Missing Data (The Smart Imputation Strategy)
+* **EDA Finding:** I discovered that over 20% of the bookings were missing their `room` type or `price` information. Simply dropping these rows would lose valuable training data, while filling them with simple statistics (like mean or median) would distort the price distribution and confuse the model.
+* **Pipeline Choice:** 
+  * I noticed that **room type is highly dependent on price and hotel branch** (e.g., Changi vs. Orchard). So, I trained a **K-Nearest Neighbors (KNN) Classifier** to impute missing room types based on price and branch.
+  * I also found that **room type, branch, and guest demographics (adults/children) are strong predictors of the room price**. Thus, once room types were filled, I trained a **Random Forest Regressor** to predict and impute the missing prices. This keeps our data distributions natural and realistic!
+
+### 2. Currency Inconsistencies (Price Standardization)
+* **EDA Finding:** The raw `price` column was a mix of different currencies stored as text strings (e.g., some were listed as `"USD 120.00"` and others as `"SGD 150.00"`).
+* **Pipeline Choice:** To feed prices into a machine learning model, they must be numerical and on the same scale. In my pipeline, I standardized all prices to a single currency (SGD) by parsing the strings and multiplying any USD amounts by the implied historical exchange rate of **1.37**.
+
+### 3. Inconsistent Text and Typographical Anomalies
+* **EDA Finding:** 
+  * The `num_adults` column contained mixed data types, representing guest counts as both digits (`1`, `2`) and text strings (`"one"`, `"two"`).
+  * Month columns (`booking_month`, `arrival_month`, `checkout_month`) had inconsistent letter casing (e.g., `"MaY"`, `"june"`, `"October"`).
+  * Some day columns contained negative numbers (e.g., `-31` or `-15`).
+* **Pipeline Choice:** I resolved these spelling and format inconsistencies during data cleaning to ensure standard input types:
+  * I mapped text counts (`"one"`, `"two"`) to numerical digits (`1`, `2`).
+  * I standardized all months to standard title case (e.g., `"May"`, `"June"`).
+  * I applied absolute values (`abs()`) to all negative day values to restore them to valid positive calendar days.
+
+### 4. High-Impact Feature Engineering
+To help my machine learning model make better predictions, I created new features that capture customer behavior far better than the raw fields alone:
+* **Feature 1: Stay Duration (`stay_duration`)**
+  * *EDA Finding:* The raw data had separate arrival and checkout details, but not the actual length of the stay. In hospitality, guests staying longer might have a different commitment level than those staying for a single night.
+  * *Pipeline Choice:* I engineered the `stay_duration` feature by calculating the difference between check-out and arrival days. I wrote custom logic to handle bookings that cross month boundaries (e.g., arriving June 30 and checking out July 2) by checking the maximum days of each month.
+* **Feature 2: Lead Time in Months (`lead_time_months`)**
+  * *EDA Finding:* A classic predictor in hotel no-shows is how far in advance a room is booked. Customers who book months in advance are statistically more likely to cancel or not show up compared to last-minute bookings.
+  * *Pipeline Choice:* I calculated `lead_time_months` as the modulo-12 month difference between the `arrival_month` and the `booking_month` to capture this behavioral lead time.
+
+---
+
 ## 📂 Repository Structure
 
 Below is the directory layout of this project, organized in a modular structure:
