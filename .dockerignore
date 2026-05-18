@@ -1,0 +1,24 @@
+# Exclude Git files
+.git/
+.github/
+
+# Exclude local agent states
+.agents/
+
+# Exclude Python compile caches and pyc files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Exclude local database state (Docker will generate its own fresh mock DB at runtime)
+data/noshow.db
+
+# Exclude local SGT execution logs
+logs/pipeline.log
+
+# Exclude Python virtual environments
+.venv/
+venv/
+ENV/
+env/
