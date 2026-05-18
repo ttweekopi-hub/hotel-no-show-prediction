@@ -2,13 +2,13 @@
 
 Hello! Welcome to my project repository for the **Hotel No-Show Prediction** technical assessment. 
 
-In the hospitality industry, when a guest makes a reservation but does not arrive (a **"no-show"**), it leads to significant revenue losses and inefficient room allocations. This project establishes a complete, production-grade Machine Learning (ML) pipeline that ingests raw SQLite customer data, handles advanced cleaning and intelligent imputation, builds a predictive model, and exposes it as a real-time web service.
+In the hospitality industry, when a guest makes a reservation but does not arrive (a **"no-show"**), it leads to significant revenue losses and inefficient room allocations. This project establishes a complete, production-grade Machine Learning (ML) pipeline that ingests raw SQLite customer data, handles advanced cleaning and intelligent imputation, builds a predictive model, and runs automated offline inference testing.
 
 ---
 
 ## 📊 Pipeline Architecture & Data Flow
 
-Here is a visual map showing exactly how data flows from the raw SQLite database through my feature engineering and preprocessing steps, all the way to model training and the live FastAPI deployment:
+Here is a visual map showing exactly how data flows from the raw SQLite database through my feature engineering and preprocessing steps, all the way to model training and offline inference verification:
 
 ```mermaid
 graph TD
@@ -56,10 +56,9 @@ graph TD
         G -->|LightGBM| H[best_model.pkl]:::model
     end
 
-    subgraph API Deployment
-        H -->|FastAPI Integration| I[Swagger UI API Endpoint]:::deploy
-        I -->|JSON Request Payload| J[predict.py Inference Engine]
-        J -->|Probability Scores| K[Output: No-Show Prediction]
+    subgraph Offline Inference
+        H -->|Load best_model.pkl| I[predict.py Inference Engine]:::deploy
+        I -->|Generate Predictions| J[Output: No-Show Predictions]
     end
 ```
 
