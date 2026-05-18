@@ -102,6 +102,25 @@ To help my machine learning model make better predictions, I created new feature
 
 ---
 
+## 🛠️ Feature Processing Summary
+
+To prepare the cleaned and engineered features for my machine learning models, I implemented a robust preprocessing pipeline. This step scales numerical inputs to prevent outlier dominance and encodes categorical text so that mathematical algorithms can process them.
+
+Below is a complete summary of how every single feature in my dataset is processed:
+
+| Feature Name | Feature Type | Imputation / Cleaning | Preprocessing & Encoding Method | Rationale & Interview Explanation |
+| :--- | :--- | :--- | :--- | :--- |
+| **`no_show`** | Target (Binary) | Rows with missing values are dropped. | Mapped to binary integer (`1` = No-Show, `0` = Showed Up). | This is our prediction target. I mapped it to `1` and `0` so the binary classification model can compute probabilities. |
+| **`first_time`** | Feature (Binary) | None (no missing values found). | Cleaned and mapped to integer (`1` = Yes, `0` = No). | Loyalty status is a simple yes/no. Converting it to binary `1`/`0` allows the model to treat it as a numerical flag. |
+| **`branch`** | Feature (Categorical) | None (no missing values found). | **One-Hot Encoding (OHE)** (creates a column for each branch, e.g. Changi, Orchard). | Machine learning models cannot read raw text. One-hot encoding converts these text labels into separate `1` and `0` columns. |
+| **`country`** | Feature (Categorical) | None (no missing values found). | **One-Hot Encoding (OHE)** with unknown categories ignored. | Standardizes country origins into binary features, allowing the model to learn geographic booking patterns. |
+| **`room`** | Feature (Categorical) | Missing values imputed using a **K-Nearest Neighbors (KNN) Classifier** (k=5) based on price and branch. | **One-Hot Encoding (OHE)**. | Fills missing rooms logically (e.g. expensive rooms are mapped to Suites), then one-hot encodes the result for modeling. |
+| **`price_sgd`** | Feature (Numerical) | Text parsed; USD unified to SGD via **1.37 rate**; missing prices imputed via **Random Forest Regressor**. | **RobustScaler** (scaled based on median and interquartile range). | Room prices contain significant outliers. Using `RobustScaler` (instead of standard scaling) prevents extreme luxury prices from skewing our model. |
+| **`stay_duration`** | Feature (Numerical, Engineered) | Calculated as difference between checkout and arrival days, capping negative days and handling month crossings. | **RobustScaler** (scaled based on median and interquartile range). | Normalizes stay lengths so that longer stays are on a comparable scale with lead times. |
+| **`lead_time_months`** | Feature (Numerical, Engineered) | Calculated as modulo-12 month difference between arrival month and booking month. | **RobustScaler** (scaled based on median and interquartile range). | Booking lead times have a wide range. Scaling ensures it is treated equally with pricing and stay duration. |
+
+---
+
 ## 📂 Repository Structure
 
 Below is the directory layout of this project, organized in a modular structure:
