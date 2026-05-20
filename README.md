@@ -90,7 +90,7 @@ Here is an overview of my key findings and the corresponding choices I made in m
   * I standardized all months to standard title case (e.g., `"May"`, `"June"`).
   * I applied absolute values (`abs()`) to all negative day values to restore them to valid positive calendar days.
 
-### 4. High-Impact Feature Engineering
+### 4. Feature Engineering
 To help my machine learning model make better predictions, I created new features that capture customer behavior far better than the raw fields alone:
 * **Feature 1: Stay Duration (`stay_duration`)**
   * *EDA Finding:* The raw data had separate arrival and checkout details, but not the actual length of the stay. In hospitality, guests staying longer might have a different commitment level than those staying for a single night.
@@ -213,24 +213,28 @@ Based on the model run results, I selected the **LightGBM Classifier** as the fi
 
 ### 3.3 🎯 Understanding the Confusion Matrix (Business Rationale)
 
-While general metrics like ROC-AUC and Accuracy tell us how the model performs overall, a **Confusion Matrix** shows us the exact trade-offs our model makes in real-world business terms. In hotel operations, not all classification errors are equal.
+While general metrics like ROC-AUC and Accuracy tell me how the model performs overall, a **Confusion Matrix** shows the exact trade-offs my model makes in real-world business terms. In hotel operations, not all classification errors are equal.
 
-When the model makes a prediction, it categorizes each booking into one of four possible outcomes:
+Here is the actual confusion matrix from the test dataset (consisting of **23,878 bookings**) processed by the selected LightGBM model:
 
-| Actual Status | Predicted: **Show Up** | Predicted: **No-Show** |
-| :--- | :--- | :--- |
-| **Guest Showed Up** | **True Negative (TN)**<br>• *What it means:* The guest was expected to show, and they did.<br>• *Business Action:* The hotel allocates the room normally. | **False Positive (FP) / False Alarm**<br>• *What it means:* Guest was expected to cancel, but they showed up.<br>• *Business Risk:* If the hotel overbooked their room, it could lead to double-booking! |
-| **Guest No-Show** | **False Negative (FN) / Missed No-Show**<br>• *What it means:* Guest was expected to show, but did not.<br>• *Business Risk:* Direct loss of revenue; the room stays empty and un-monetized. | **True Positive (TP)**<br>• *What it means:* Guest was expected to cancel, and they did.<br>• *Business Action:* Perfect! The hotel can pre-emptively resell this room or call to confirm. |
+| Actual Status | Predicted: **Show Up (0)** | Predicted: **No-Show (1)** |
+| :--- | :---: | :---: |
+| **Guest Showed Up (0)** | **12,991** (True Negative - TN)<br>• *What it means:* I predicted the guest would show up, and they did.<br>• *Action:* Room is occupied normally. | **2,042** (False Positive - FP)<br>• *What it means:* I predicted a no-show, but they showed up.<br>• *Risk:* Double-booking if I overbooked! |
+| **Guest No-Show (1)** | **4,142** (False Negative - FN)<br>• *What it means:* I predicted they would show up, but they didn't.<br>• *Risk:* Room stays empty; lost revenue. | **4,703** (True Positive - TP)<br>• *What it means:* I predicted a no-show, and they didn't show up.<br>• *Action:* Pre-emptively resell room. |
 
-#### 📊 How to read the confusion matrix in the logs (`logs/pipeline.log`)
-During pipeline training, the orchestrator outputs the confusion matrix for the final selected model on the test set. Here is the visual grid printed in the logs:
+#### 📊 How to Interpret the Numbers
 
-* **True Negatives (TN)**: The count of bookings correctly predicted to arrive.
-* **True Positives (TP)**: The count of bookings correctly predicted to cancel (enabling proactive reselling).
-* **False Positives (FP)**: The false alarm rate (predicted no-show, but guest arrives).
-* **False Negatives (FN)**: The missed cancellation rate (predicted show, but guest cancels).
+To help you understand how I analyze these results, here is a simple breakdown of the test outcomes:
 
-By balancing these outcomes, we can adjust model probability thresholds to maximize hotel occupancy while minimizing double-booking risks!
+1. **Successful Predictions (17,694 bookings):**
+   * **12,991 times (True Negatives):** I correctly predicted that the guest would arrive. These guests showed up as expected, ensuring steady day-to-day operations.
+   * **4,703 times (True Positives):** I correctly caught guests who were going to cancel or not show up. In hotel operations, this is highly valuable because it lets me pre-emptively resell those rooms to new guests or contact them early to confirm.
+
+2. **Prediction Mistakes (6,184 bookings):**
+   * **4,142 times (False Negatives):** I predicted the guest would show up, but they didn't. This is a missed no-show, representing direct lost revenue because the room was held but went unused.
+   * **2,042 times (False Positives):** I flagged the guest as a no-show, but they actually arrived. This is a false alarm. If I had aggressively overbooked the hotel based on this prediction, it could lead to double-bookings and unhappy customers.
+
+By understanding these trade-offs, I can adjust the model's decision threshold. For example, if the cost of an empty room is very high, I might accept more false alarms (False Positives) in order to catch more missed no-shows (False Negatives).
 
 ---
 
