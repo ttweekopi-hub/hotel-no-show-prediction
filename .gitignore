@@ -30,6 +30,7 @@ data/noshow.db
 *.db
 *.sqlite3
 *.csv
+!data/noshow.csv
 
 # ==========================================
 # Machine Learning Models & Logging
