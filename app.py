@@ -193,7 +193,7 @@ st.sidebar.metric("No-show rate", f"{df['no_show'].mean() * 100:.1f}%")
 
 if selected_section == "Overview":
     section_header(
-        "Hotel No-Show Prediction: EDA Story",
+        "Hotel No-Show Prediction",
         "A visual walkthrough of the key data findings, model evaluation results, and pipeline decisions.",
     )
 
