@@ -4,6 +4,12 @@ Hello! Welcome to my project repository for the **Hotel No-Show Prediction** tec
 
 In the hospitality industry, when a guest makes a reservation but does not arrive (a **"no-show"**), it leads to significant revenue losses and inefficient room allocations. This project establishes a complete, production-grade Machine Learning (ML) pipeline that ingests raw SQLite customer data, handles advanced cleaning and intelligent imputation, builds a predictive model, and runs automated offline inference testing.
 
+## 🌐 Live Streamlit Application
+
+I have also deployed an interactive Streamlit application to make the project easier to explore and visualize online. The application provides a more accessible way to review the hotel no-show prediction workflow, inspect key outputs, and interact with the model-driven insights without needing to run the full pipeline locally.
+
+**Streamlit app:** [https://hotel-no-show-prediction-3tjvcngpemga2c2kpam4wq.streamlit.app/](https://hotel-no-show-prediction-3tjvcngpemga2c2kpam4wq.streamlit.app/)
+
 ---
 
 ## 📊 Pipeline Architecture & Data Flow
