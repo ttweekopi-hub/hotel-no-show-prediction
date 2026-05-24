@@ -27,7 +27,6 @@ __pypackages__/
 # Large Datasets & Databases (CRITICAL)
 # ==========================================
 data/noshow.db
-data/noshow.csv
 *.db
 *.sqlite3
 *.csv
